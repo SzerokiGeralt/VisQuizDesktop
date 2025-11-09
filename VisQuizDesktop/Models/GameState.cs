@@ -6,12 +6,17 @@ using System.Threading.Tasks;
 
 namespace VisQuizDesktop.Models
 {
-    internal class GameState
+    public class GameState
     {
-        public int CorrectAnswers { get; set; }
-        public int TotalQuestions { get; set; }
-        public long ElapsedMiliseconds { get; set; }
-        public string CategoryName { get; set; }
+        public List<Question> CorrectlyAnsweredQuestions { get; set; }
+        public List<Question> WronglyAnsweredQuestions { get; set; }
+        public QuestionCategory? CurrentCategory { get; set; }
+        public Question? CurrentQuestion { get; set; }
 
+        public GameState()
+        {
+            CorrectlyAnsweredQuestions = new List<Question>();
+            WronglyAnsweredQuestions = new List<Question>();
+        }
     }
 }

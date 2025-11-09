@@ -1,0 +1,27 @@
+{
+  "Name": "Informatyka",
+  "Questions": [
+    {
+      "Text": "Co oznacza skr\u00F3t CPU?",
+      "Answers": [
+        "Central Processing Unit",
+        "Computer Personal Unit",
+        "Central Program Utility",
+        "Core Processing Utility"
+      ],
+      "CorrectAnswerIndex": 0,
+      "ImagePath": ""
+    },
+    {
+      "Text": "Kt\u00F3ry j\u0119zyk programowania jest u\u017Cywany g\u0142\u00F3wnie do tworzenia stron internetowych?",
+      "Answers": [
+        "Python",
+        "JavaScript",
+        "C\u002B\u002B",
+        "Java"
+      ],
+      "CorrectAnswerIndex": 1,
+      "ImagePath": ""
+    }
+  ]
+}

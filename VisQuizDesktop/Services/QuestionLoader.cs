@@ -9,7 +9,7 @@ using System.Text.Json;
 
 namespace VisQuizDesktop.Services
 {
-    internal class QuestionLoader
+    public class QuestionLoader
     {
         public const string QuestionsDirectory = "Pytania";
 
@@ -21,20 +21,20 @@ namespace VisQuizDesktop.Services
             {
                 new QuestionCategory
                 {
-                    Name = "Science",
+                    Name = "Grafika komputerowa",
                     Questions = new List<Question>
                     {
                         new Question
                         {
-                            Text = "What is the chemical symbol for water?",
-                            Answers = new List<string> { "H2O", "O2", "CO2", "NaCl" },
+                            Text = "Jaki jest najpopularniejszy format plików graficznych z kompresją stratną?",
+                            Answers = new List<string> { "JPEG", "PNG", "BMP", "TIFF" },
                             CorrectAnswerIndex = 0,
                             ImagePath = ""
                         },
                         new Question
                         {
-                            Text = "What planet is known as the Red Planet?",
-                            Answers = new List<string> { "Earth", "Mars", "Jupiter", "Venus" },
+                            Text = "Który model kolorów jest używany do wyświetlania obrazów na monitorze?",
+                            Answers = new List<string> { "CMYK", "RGB", "HSV", "LAB" },
                             CorrectAnswerIndex = 1,
                             ImagePath = ""
                         }
@@ -42,21 +42,21 @@ namespace VisQuizDesktop.Services
                 },
                 new QuestionCategory
                 {
-                    Name = "History",
+                    Name = "Informatyka",
                     Questions = new List<Question>
                     {
                         new Question
                         {
-                            Text = "Who was the first President of the United States?",
-                            Answers = new List<string> { "George Washington", "Thomas Jefferson", "Abraham Lincoln", "John Adams" },
+                            Text = "Co oznacza skrót CPU?",
+                            Answers = new List<string> { "Central Processing Unit", "Computer Personal Unit", "Central Program Utility", "Core Processing Utility" },
                             CorrectAnswerIndex = 0,
                             ImagePath = ""
                         },
                         new Question
                         {
-                            Text = "In which year did World War II end?",
-                            Answers = new List<string> { "1945", "1939", "1918", "1963" },
-                            CorrectAnswerIndex = 0,
+                            Text = "Który język programowania jest używany głównie do tworzenia stron internetowych?",
+                            Answers = new List<string> { "Python", "JavaScript", "C++", "Java" },
+                            CorrectAnswerIndex = 1,
                             ImagePath = ""
                         }
                     }

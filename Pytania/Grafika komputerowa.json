@@ -1,0 +1,27 @@
+{
+  "Name": "Grafika komputerowa",
+  "Questions": [
+    {
+      "Text": "Jaki jest najpopularniejszy format plik\u00F3w graficznych z kompresj\u0105 stratn\u0105?",
+      "Answers": [
+        "JPEG",
+        "PNG",
+        "BMP",
+        "TIFF"
+      ],
+      "CorrectAnswerIndex": 0,
+      "ImagePath": ""
+    },
+    {
+      "Text": "Kt\u00F3ry model kolor\u00F3w jest u\u017Cywany do wy\u015Bwietlania obraz\u00F3w na monitorze?",
+      "Answers": [
+        "CMYK",
+        "RGB",
+        "HSV",
+        "LAB"
+      ],
+      "CorrectAnswerIndex": 1,
+      "ImagePath": ""
+    }
+  ]
+}

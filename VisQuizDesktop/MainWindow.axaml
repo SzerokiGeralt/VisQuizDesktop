@@ -2,8 +2,191 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
         x:Class="VisQuizDesktop.MainWindow"
-        Title="VisQuizDesktop">
-    Welcome to Avalonia!
+        Title="VisQuiz"
+        Width="960" Height="540"
+        WindowStartupLocation="CenterScreen"
+        Background="#0A0E27">
+
+    <Window.Styles>
+        <!-- Globalny styl dla TextBlock -->
+        <Style Selector="TextBlock">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="Comfortaa"/>
+        </Style>
+
+        <!-- Styl dla kategorii -->
+        <Style Selector="Border.category">
+            <Setter Property="Background" Value="#1A1E3F"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="20,15"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Border.category:pointerover">
+            <Setter Property="Background" Value="#1b75bc"/>
+        </Style>
+
+        <!-- Styl dla odpowiedzi -->
+        <Style Selector="Border.answer">
+            <Setter Property="Background" Value="#1A1E3F"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="15,10"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Border.answer:pointerover">
+            <Setter Property="Background" Value="#252A4F"/>
+        </Style>
+    </Window.Styles>
+
+    <Viewbox Stretch="Uniform">
+        <Grid Width="1920" Height="1080" Margin="60">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Title -->
+            <TextBlock Grid.Row="0" 
+                       Text="VisQuiz" 
+                       FontSize="72" 
+                       FontWeight="Bold"
+                       Foreground="#1b75bc"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,60"/>
+
+            <!-- Category Selection View -->
+            <Grid x:Name="CategoryPanel" 
+                  Grid.Row="1"
+                  VerticalAlignment="Center"
+                  HorizontalAlignment="Center">
+                
+                <StackPanel Spacing="40">
+                    <TextBlock Text="Wybierz zestaw"
+                               FontSize="36"
+                               Foreground="#8cc747"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,40"/>
+
+                    <!-- Grid dla kategorii w stylu Milionerów (2 kolumny) -->
+                    <Grid x:Name="CategoriesGrid"
+                          HorizontalAlignment="Center"
+                          ColumnDefinitions="Auto,Auto"
+                          RowDefinitions="Auto,Auto">
+                        <!-- Kategorie bêd¹ dodawane dynamicznie -->
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+            <!-- Question View -->
+            <Grid x:Name="QuestionPanel" 
+                  Grid.Row="1"
+                  VerticalAlignment="Center"
+                  IsVisible="False">
+                
+                <StackPanel Spacing="40"
+                            MaxWidth="1600"
+                            HorizontalAlignment="Center">
+                    
+                    <TextBlock x:Name="QuestionNumberText"
+                               FontSize="32"
+                               Foreground="#8cc747"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,20"/>
+
+                    <TextBlock x:Name="QuestionText"
+                               FontSize="48"
+                               FontWeight="Bold"
+                               Foreground="White"
+                               TextWrapping="Wrap"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               Margin="0,0,0,40"/>
+
+                    <Image x:Name="QuestionImage"
+                           MaxHeight="400"
+                           Margin="0,0,0,40"
+                           IsVisible="False"
+                           Stretch="Uniform"/>
+
+                    <!-- Grid dla odpowiedzi w stylu Milionerów (2 kolumny, wiele rzêdów) -->
+                    <Grid x:Name="AnswersGrid"
+                          HorizontalAlignment="Center"
+                          ColumnDefinitions="Auto,Auto"
+                          RowDefinitions="Auto,Auto,Auto,Auto">
+                        <!-- Odpowiedzi bêd¹ dodawane dynamicznie -->
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+            <!-- Results View -->
+            <StackPanel x:Name="ResultsPanel"
+                        Grid.Row="1"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Spacing="40"
+                        IsVisible="False">
+                
+                <TextBlock Text="WYNIKI"
+                           FontSize="72"
+                           FontWeight="Bold"
+                           Foreground="#1b75bc"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,20"/>
+
+                <TextBlock x:Name="CategoryNameText"
+                           FontSize="40"
+                           Foreground="#8cc747"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,40"/>
+
+                <TextBlock x:Name="ScoreText"
+                           FontSize="52"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,20"/>
+
+                <TextBlock x:Name="PercentageText"
+                           FontSize="48"
+                           Foreground="#8cc747"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,20"/>
+
+                <TextBlock x:Name="TimeText"
+                           FontSize="40"
+                           Foreground="White"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,40"/>
+
+                <Border Background="#1b75bc"
+                        CornerRadius="15"
+                        Padding="60,25">
+                    <TextBlock Text="A. Graj ponownie"
+                               FontSize="36"
+                               FontWeight="Bold"
+                               Foreground="White"
+                               HorizontalAlignment="Center"/>
+                </Border>
+            </StackPanel>
+
+            <!-- Progress Bar -->
+            <ProgressBar x:Name="ProgressBar"
+                         Grid.Row="2"
+                         Height="40"
+                         Minimum="0"
+                         Maximum="5"
+                         Value="0"
+                         Foreground="#8cc747"
+                         Background="#1A1E3F"
+                         CornerRadius="20"
+                         Margin="0,40,0,0"
+                         IsVisible="False"/>
+        </Grid>
+    </Viewbox>
 </Window>
