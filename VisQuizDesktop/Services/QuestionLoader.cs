@@ -87,6 +87,17 @@ namespace VisQuizDesktop.Services
             };
 
 
+            var files = dirInfo.GetFiles("*.json");
+            foreach (var file in files)
+            {
+                string json = System.IO.File.ReadAllText(file.FullName);
+                var category = JsonSerializer.Deserialize<QuestionCategory>(json, options);
+                if (category != null)
+                {
+                    categories.Add(category);
+                }
+            }
+
             return categories;
         }
     }
