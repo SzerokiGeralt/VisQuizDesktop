@@ -1,5 +1,6 @@
-﻿using System;
-using Avalonia;
+﻿using Avalonia;
+using Avalonia.Fonts.Inter;
+using System;
 
 namespace VisQuizDesktop
 {
@@ -17,6 +18,10 @@ namespace VisQuizDesktop
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
                 .WithInterFont()
+                .ConfigureFonts(fontManager =>
+                {
+                    fontManager.AddFontCollection(new InterFontCollection());
+                })
                 .LogToTrace();
     }
 }

@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Styling;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,7 +20,8 @@ namespace VisQuizDesktop
         private ViewState _currentView = ViewState.CategorySelection;
         private List<Border> _answerBorders = new List<Border>();
         private List<Border> _categoryBorders = new List<Border>();
-        private List<char> _inputLabel = new List<char> {'A','B','C','D','E','F'};
+        private List<char> _inputLabel = new List<char> { 'A', 'B', 'C', 'D', 'E', 'F' };
+        private bool _isProcessing = false; // Flaga blokuj¹ca wielokrotne klikniêcia
 
         public MainWindow()
         {
@@ -48,6 +50,9 @@ namespace VisQuizDesktop
 
         private void OnKeyDown(object? sender, KeyEventArgs e)
         {
+            // Zablokuj input jeœli trwa przetwarzanie
+            if (_isProcessing) return;
+
             int keyNumber = GetKeyNumber(e.Key);
             if (keyNumber == -1) return;
 
@@ -83,70 +88,95 @@ namespace VisQuizDesktop
         private void ShowCategorySelection()
         {
             _currentView = ViewState.CategorySelection;
+            _isProcessing = false; // Odblokuj input
 
             CategoryPanel.IsVisible = true;
             QuestionPanel.IsVisible = false;
             ResultsPanel.IsVisible = false;
-            ProgressBar.IsVisible = false;
+            ProgressDotsPanel.IsVisible = false;
 
             DisplayCategories();
         }
 
         private void DisplayCategories()
         {
-            CategoriesGrid.Children.Clear();
+            CategoriesStack.Children.Clear();
             _categoryBorders.Clear();
 
-            // Uk³ad w stylu Milionerów - 2 kolumny, wiele rzêdów
+            // Uk³ad horyzontalny - kategorie obok siebie
             for (int i = 0; i < _quiz.Categories.Count; i++)
             {
                 var category = _quiz.Categories[i];
-                int row = i / 2;
-                int col = i % 2;
 
+                // G³ówny kontener z kategori¹ i etykiet¹
+                var categoryContainer = new StackPanel
+                {
+                    Orientation = Avalonia.Layout.Orientation.Vertical,
+                    Spacing = 15,
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center
+                };
+
+                // Border z tekstem kategorii (bez etykiety)
                 var border = new Border
                 {
                     Classes = { "category" },
-                    MinWidth = 450,
-                    Child = new StackPanel
+                    MinWidth = 350,
+                    MinHeight = 200,
+                    Child = new Grid  // Zmiana z StackPanel na Grid
                     {
-                        Orientation = Avalonia.Layout.Orientation.Horizontal,
-                        Spacing = 20,
-                        Children =
+                        Children = 
                         {
                             new TextBlock
                             {
-                                Text = $"{_inputLabel[i]}",
-                                FontSize = 48,
-                                FontWeight = FontWeight.Bold,
-                                Foreground = new SolidColorBrush(Color.Parse("#1b75bc")),
-                                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                                Width = 60
-                            },
-                            new TextBlock
-                            {
                                 Text = category.Name,
-                                FontSize = 36,
+                                FontSize = 32,
                                 FontWeight = FontWeight.Bold,
                                 Foreground = Brushes.White,
-                                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+                                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                                TextWrapping = TextWrapping.Wrap,
+                                TextAlignment = TextAlignment.Center,
+                                MaxWidth = 300,
+                                Padding = new Avalonia.Thickness(10)
                             }
                         }
                     }
                 };
 
-                Grid.SetRow(border, row);
-                Grid.SetColumn(border, col);
+                // Etykieta pod boxem
+                var label = new Border
+                {
+                    Classes = { "letters" },
+                    CornerRadius = new Avalonia.CornerRadius(150),
+                    Width = 150,
+                    Height = 150,
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                    Child = new TextBlock
+                    {
+                        Text = $"{_inputLabel[i]}",
+                        FontSize = 50,
+                        FontWeight = FontWeight.Bold,
+                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                        VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                    },
+                    Padding = new Avalonia.Thickness(0, 10, 0, 0)
+                };
+
+                // Dodaj etykietê i border do kontenera
+                categoryContainer.Children.Add(border);
+                categoryContainer.Children.Add(label);
 
                 _categoryBorders.Add(border);
-                CategoriesGrid.Children.Add(border);
+                CategoriesStack.Children.Add(categoryContainer);
             }
         }
 
-        private void HandleCategorySelection(int keyNumber)
+        private async void HandleCategorySelection(int keyNumber)
         {
             if (keyNumber >= 1 && keyNumber <= _quiz.Categories.Count)
             {
+                _isProcessing = true; // Zablokuj input
+
                 // Podœwietl wybran¹ kategoriê
                 HighlightCategory(keyNumber - 1);
 
@@ -154,10 +184,9 @@ namespace VisQuizDesktop
                 _quiz.StartQuiz(selectedCategory);
 
                 // OpóŸnienie dla efektu wizualnego
-                Task.Delay(300).ContinueWith(_ =>
-                {
-                    Avalonia.Threading.Dispatcher.UIThread.Post(() => StartQuestion());
-                });
+                await Task.Delay(300);
+                
+                StartQuestion();
             }
         }
 
@@ -181,9 +210,11 @@ namespace VisQuizDesktop
             _currentView = ViewState.Question;
             CategoryPanel.IsVisible = false;
             QuestionPanel.IsVisible = true;
-            ProgressBar.IsVisible = true;
+            ProgressDotsPanel.IsVisible = false;
 
             DisplayQuestion(question);
+            
+            _isProcessing = false; // Odblokuj input po wyœwietleniu pytania
         }
 
         private void DisplayQuestion(Question question)
@@ -196,6 +227,9 @@ namespace VisQuizDesktop
             QuestionNumberText.Text = $"Pytanie {currentQuestionNumber} z {_quiz.MaxQuestions}";
             QuestionText.Text = question.Text;
 
+            // Aktualizuj kropki postêpu
+            UpdateProgressDots(currentQuestionNumber);
+
             // Obs³uga obrazka
             if (!string.IsNullOrEmpty(question.ImagePath) && File.Exists(question.ImagePath))
             {
@@ -207,65 +241,91 @@ namespace VisQuizDesktop
                 QuestionImage.IsVisible = false;
             }
 
-            // Wyœwietl odpowiedzi w uk³adzie 2 kolumny
-            AnswersGrid.Children.Clear();
+            // Wyœwietl odpowiedzi w uk³adzie horyzontalnym
+            AnswersStack.Children.Clear();
             _answerBorders.Clear();
-
-            // Dynamiczne dostosowanie liczby rzêdów
-            AnswersGrid.RowDefinitions.Clear();
-            int rowCount = (int)Math.Ceiling(question.Answers.Count / 2.0);
-            for (int r = 0; r < rowCount; r++)
-            {
-                AnswersGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            }
 
             for (int i = 0; i < question.Answers.Count; i++)
             {
-                int row = i / 2;
-                int col = i % 2;
+                // G³ówny kontener z odpowiedzi¹ i etykiet¹ (jak w kategoriach)
+                var answerContainer = new StackPanel
+                {
+                    Orientation = Avalonia.Layout.Orientation.Vertical,
+                    Spacing = 15,
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center
+                };
 
+                // Border z tekstem odpowiedzi (bez etykiety)
                 var border = new Border
                 {
                     Classes = { "answer" },
-                    MinWidth = 700,
-                    Child = new StackPanel
+                    MinWidth = 350,
+                    MinHeight = 200,
+                    Child = new Grid  // Zmiana z StackPanel na Grid (jak w kategoriach)
                     {
-                        Orientation = Avalonia.Layout.Orientation.Horizontal,
-                        Spacing = 20,
                         Children =
                         {
                             new TextBlock
                             {
-                                Text = $"{_inputLabel[i]}",
-                                FontSize = 42,
-                                FontWeight = FontWeight.Bold,
-                                Foreground = new SolidColorBrush(Color.Parse("#1b75bc")),
-                                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                                Width = 50
-                            },
-                            new TextBlock
-                            {
                                 Text = question.Answers[i],
-                                FontSize = 32,
+                                FontSize = 28,
+                                FontWeight = FontWeight.Bold,
                                 Foreground = Brushes.White,
-                                TextWrapping = TextWrapping.Wrap,
+                                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
                                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                                MaxWidth = 600
+                                TextWrapping = TextWrapping.Wrap,
+                                TextAlignment = TextAlignment.Center,
+                                MaxWidth = 300,
+                                Padding = new Avalonia.Thickness(10)
                             }
                         }
                     }
                 };
 
-                Grid.SetRow(border, row);
-                Grid.SetColumn(border, col);
+                // Etykieta pod boxem (dok³adnie taka sama jak w kategoriach)
+                var label = new Border
+                {
+                    Classes = { "letters" },
+                    CornerRadius = new Avalonia.CornerRadius(150),
+                    Width = 150,
+                    Height = 150,
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                    Child = new TextBlock
+                    {
+                        Text = $"{_inputLabel[i]}",
+                        FontSize = 50,
+                        FontWeight = FontWeight.Bold,
+                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                        VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                    },
+                    Padding = new Avalonia.Thickness(0, 10, 0, 0)
+                };
+
+                // Dodaj border i etykietê do kontenera
+                answerContainer.Children.Add(border);
+                answerContainer.Children.Add(label);
 
                 _answerBorders.Add(border);
-                AnswersGrid.Children.Add(border);
+                AnswersStack.Children.Add(answerContainer);
             }
+        }
 
-            // Aktualizuj progress bar
-            ProgressBar.Value = currentQuestionNumber - 1;
-            ProgressBar.Maximum = _quiz.MaxQuestions;
+        private void UpdateProgressDots(int currentQuestion)
+        {
+            // ZnajdŸ wszystkie kropki
+            var dots = new[] { Dot1, Dot2, Dot3, Dot4, Dot5 };
+
+            for (int i = 0; i < dots.Length; i++)
+            {
+                if (i < currentQuestion)
+                {
+                    dots[i].Fill = new SolidColorBrush(Color.Parse("#8cc747"));
+                }
+                else
+                {
+                    dots[i].Fill = new SolidColorBrush(Color.Parse("#3A3F5F"));
+                }
+            }
         }
 
         private async void HandleAnswerSelection(int keyNumber)
@@ -273,6 +333,8 @@ namespace VisQuizDesktop
             var question = _quiz.GetCurrentQuestion();
             if (question == null || keyNumber < 1 || keyNumber > question.Answers.Count)
                 return;
+
+            _isProcessing = true; // Zablokuj input
 
             int answerIndex = keyNumber - 1;
             bool isCorrect = _quiz.AnswerQuestion(answerIndex);
@@ -328,9 +390,10 @@ namespace VisQuizDesktop
         {
             _quiz.FinishQuiz();
             _currentView = ViewState.Results;
+            _isProcessing = false; // Odblokuj input na ekranie wyników
 
             QuestionPanel.IsVisible = false;
-            ProgressBar.IsVisible = false;
+            ProgressDotsPanel.IsVisible = false;
             ResultsPanel.IsVisible = true;
 
             DisplayResults();
@@ -349,12 +412,13 @@ namespace VisQuizDesktop
 
             CategoryNameText.Text = $"Kategoria: {_quiz.CurrentState.CurrentCategory?.Name ?? "Nieznana"}";
             ScoreText.Text = $"Poprawne odpowiedzi: {correctAnswers} z {totalQuestions}";
-            PercentageText.Text = $"Wynik: {percentage}%";
+            //PercentageText.Text = $"Wynik: {percentage}%";
             TimeText.Text = $"Czas: {timeFormatted}";
         }
 
         private void RestartGame()
         {
+            _isProcessing = true; // Zablokuj input podczas restartu
             _quiz = new Quiz();
             ShowCategorySelection();
         }
