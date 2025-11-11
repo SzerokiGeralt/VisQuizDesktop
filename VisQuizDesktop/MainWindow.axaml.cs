@@ -22,6 +22,39 @@ namespace VisQuizDesktop
         private List<Border> _categoryBorders = new List<Border>();
         private List<char> _inputLabel = new List<char> { 'A', 'B', 'C', 'D', 'E', 'F' };
         private bool _isProcessing = false; // Flaga blokuj¹ca wielokrotne klikniêcia
+        private RadialGradientBrush gradientCorrect = new RadialGradientBrush
+        {
+            GradientStops = new GradientStops
+                    {
+                        new GradientStop
+                        {
+                            Color = Color.Parse("#333739"),
+                            Offset = 0.2
+                        },
+                        new GradientStop
+                        {
+                            Color = Color.Parse("#8cc747"),
+                            Offset = 1
+                        }
+                    }
+        };
+
+        private RadialGradientBrush gradientIncorrect = new RadialGradientBrush
+        {
+            GradientStops = new GradientStops
+                    {
+                        new GradientStop
+                        {
+                            Color = Color.Parse("#333739"),
+                            Offset = 0.2
+                        },
+                        new GradientStop
+                        {
+                            Color = Color.Parse("#F44336"),
+                            Offset = 1
+                        }
+                    }
+        };
 
         public MainWindow()
         {
@@ -194,7 +227,7 @@ namespace VisQuizDesktop
         {
             if (index >= 0 && index < _categoryBorders.Count)
             {
-                _categoryBorders[index].Background = new SolidColorBrush(Color.Parse("#8cc747"));
+                _categoryBorders[index].Background = gradientCorrect;
             }
         }
 
@@ -267,6 +300,7 @@ namespace VisQuizDesktop
                         {
                             new TextBlock
                             {
+                                
                                 Text = question.Answers[i],
                                 FontSize = 28,
                                 FontWeight = FontWeight.Bold,
@@ -365,9 +399,7 @@ namespace VisQuizDesktop
         {
             if (selectedIndex >= 0 && selectedIndex < _answerBorders.Count)
             {
-                _answerBorders[selectedIndex].Background = new SolidColorBrush(
-                    isCorrect ? Color.Parse("#8cc747") : Color.Parse("#F44336")
-                );
+                _answerBorders[selectedIndex].Background = isCorrect ? gradientCorrect : gradientIncorrect;
                 if (!isCorrect)
                 {
                     // Podœwietl poprawn¹ odpowiedŸ
@@ -377,7 +409,7 @@ namespace VisQuizDesktop
                         int correctIndex = question.CorrectAnswerIndex;
                         if (correctIndex >= 0 && correctIndex < _answerBorders.Count)
                         {
-                            _answerBorders[correctIndex].Background = new SolidColorBrush(Color.Parse("#8cc747"));
+                            _answerBorders[correctIndex].Background = gradientCorrect;
                         }
                     }
                 }
