@@ -27,6 +27,7 @@
         <Style Selector="Border.letters">
             <Setter Property="Background" Value="#333739"/>
         </Style>
+        
         <!-- Styl dla kategorii -->
         <Style Selector="Border.category">
             <Setter Property="Background" Value="#333739"/>
@@ -43,9 +44,9 @@
         <!-- Styl dla odpowiedzi -->
         <Style Selector="Border.answer">
             <Setter Property="Background" Value="#333739"/>
-            <Setter Property="CornerRadius" Value="10"/>
-            <Setter Property="Padding" Value="15,10"/>
-            <Setter Property="Margin" Value="5"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="Margin" Value="3"/>
             <Setter Property="Cursor" Value="Hand"/>
         </Style>
 
@@ -55,20 +56,21 @@
     </Window.Styles>
 
     <Viewbox Stretch="Uniform">
-        <Grid Width="1920" Height="1080" Margin="60">
+        <Grid Width="1920" Height="1080">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- Title -->
+            <!-- Title - zakotwiczone do góry -->
             <TextBlock Grid.Row="0" 
                        Text="VisQuiz" 
-                       FontSize="72" 
+                       FontSize="56" 
                        FontFamily="{StaticResource VisgraphFont}"
                        HorizontalAlignment="Center"
-                       Margin="0,0,0,60"/>
+                       VerticalAlignment="Top"
+                       Margin="0,20,0,0"/>
 
             <!-- Category Selection View -->
             <Grid x:Name="CategoryPanel" 
@@ -76,74 +78,93 @@
                   VerticalAlignment="Center"
                   HorizontalAlignment="Center">
                 
-                <StackPanel Spacing="40">
+                <StackPanel Spacing="25">
                     <TextBlock Text="Wybierz zestaw"
-                               FontSize="36"
+                               FontSize="28"
                                Foreground="#8cc747"
                                HorizontalAlignment="Center"
-                               Margin="0,0,0,40"/>
+                               Margin="0,0,0,25"/>
 
-                    <!-- StackPanel dla kategorii (uk³ad horyzontalny) -->
                     <StackPanel x:Name="CategoriesStack"
                                 Orientation="Horizontal"
                                 HorizontalAlignment="Center"
-                                Spacing="20">
-                        <!-- Kategorie bêd¹ dodawane dynamicznie -->
+                                Spacing="15">
                     </StackPanel>
                 </StackPanel>
             </Grid>
 
-            <!-- Question View -->
+            <!-- Question View - Sta³y uk³ad Grid, pytanie i obrazek wyœrodkowane -->
             <Grid x:Name="QuestionPanel" 
                   Grid.Row="1"
-                  VerticalAlignment="Center"
-                  IsVisible="False">
+                  IsVisible="False"
+                  VerticalAlignment="Center">
                 
-                <StackPanel Spacing="40"
-                            MaxWidth="1600"
-                            HorizontalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>   <!-- Header: Question number + dots -->
+                    <RowDefinition Height="*"/>      <!-- Question text + Image - wyœrodkowane, fill -->
+                </Grid.RowDefinitions>
+                
+                <!-- Row 0: Question Number + Progress Dots - zakotwiczone na dole tego wiersza -->
+                <StackPanel Grid.Row="0" 
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom"
+                            Spacing="25"
+                            Margin="0,0,0,15">
                     
-                    <TextBlock x:Name="QuestionNumberText"
-                               FontSize="32"
+<!--                    <TextBlock x:Name="QuestionNumberText"
+                               FontSize="22"
                                Foreground="#8cc747"
-                               HorizontalAlignment="Center"
-                               Margin="0,0,0,10"/>
+                               VerticalAlignment="Center"/>-->
                     
-                    <!-- Progress Dots -->
                     <StackPanel Orientation="Horizontal"
-                                HorizontalAlignment="Center"
-                                Spacing="15"
-                                Margin="0,0,0,20">
-                        <Ellipse x:Name="Dot1" Width="20" Height="20" Fill="#8cc747"/>
-                        <Ellipse x:Name="Dot2" Width="20" Height="20" Fill="#3A3F5F"/>
-                        <Ellipse x:Name="Dot3" Width="20" Height="20" Fill="#3A3F5F"/>
-                        <Ellipse x:Name="Dot4" Width="20" Height="20" Fill="#3A3F5F"/>
-                        <Ellipse x:Name="Dot5" Width="20" Height="20" Fill="#3A3F5F"/>
+                                VerticalAlignment="Center"
+                                Spacing="10">
+                        <Ellipse x:Name="Dot1" Width="14" Height="14" Fill="#8cc747"/>
+                        <Ellipse x:Name="Dot2" Width="14" Height="14" Fill="#3A3F5F"/>
+                        <Ellipse x:Name="Dot3" Width="14" Height="14" Fill="#3A3F5F"/>
+                        <Ellipse x:Name="Dot4" Width="14" Height="14" Fill="#3A3F5F"/>
+                        <Ellipse x:Name="Dot5" Width="14" Height="14" Fill="#3A3F5F"/>
                     </StackPanel>
+                </StackPanel>
 
+                <!-- Row 1: Question Text + Image - wyœrodkowane, bez marginesów bocznych -->
+                <Grid Grid.Row="1"
+                      VerticalAlignment="Center"
+                      HorizontalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/> <!-- Question text -->
+                        <RowDefinition Height="*"/>    <!-- Image fills remaining space -->
+                    </Grid.RowDefinitions>
+                    
+                    <!-- Question Text -->
                     <TextBlock x:Name="QuestionText"
-                               FontSize="48"
+                               Grid.Row="0"
+                               FontSize="28"
                                FontWeight="Bold"
                                Foreground="White"
                                TextWrapping="Wrap"
                                HorizontalAlignment="Center"
                                TextAlignment="Center"
-                               Margin="0,0,0,40"/>
+                               MaxWidth="1800"
+                               Margin="20,0,20,15"/>
 
-                    <Image x:Name="QuestionImage"
-                           MaxHeight="400"
-                           Margin="0,0,0,40"
-                           IsVisible="False"
-                           Stretch="Uniform"/>
-
-                    <!-- StackPanel dla odpowiedzi (uk³ad horyzontalny) -->
-                    <StackPanel x:Name="AnswersStack"
-                                Orientation="Horizontal"
-                                HorizontalAlignment="Center"
-                                Spacing="20">
-                        <!-- Odpowiedzi bêd¹ dodawane dynamicznie -->
-                    </StackPanel>
-                </StackPanel>
+                    <!-- Image - skaluje siê i wype³nia przestrzeñ -->
+                    <Border x:Name="QuestionImageBorder"
+                            Grid.Row="1"
+                            Background="#333739"
+                            CornerRadius="8"
+                            Padding="15"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Margin="40,20,40,20"
+                            MaxHeight="450">
+                        <Image x:Name="QuestionImage"
+                               Stretch="Uniform"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                    </Border>
+                </Grid>
             </Grid>
 
             <!-- Results View -->
@@ -151,53 +172,39 @@
                         Grid.Row="1"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Center"
-                        Spacing="40"
+                        Spacing="30"
                         IsVisible="False">
-                
-<!--                <TextBlock Text="WYNIKI"
-                           FontSize="72"
-                           FontWeight="Bold"
-                           Foreground="#1b75bc"
-                           HorizontalAlignment="Center"
-                           Margin="0,0,0,20"/>-->
 
                 <TextBlock x:Name="CategoryNameText"
-                           FontSize="40"
+                           FontSize="32"
                            Foreground="#8cc747"
                            HorizontalAlignment="Center"
-                           Margin="0,0,0,40"/>
+                           Margin="0,0,0,25"/>
 
                 <TextBlock x:Name="ScoreText"
-                           FontSize="52"
+                           FontSize="42"
                            FontWeight="Bold"
                            Foreground="White"
                            HorizontalAlignment="Center"
-                           Margin="0,0,0,20"/>
-
-<!--                <TextBlock x:Name="PercentageText"
-                           FontSize="48"
-                           Foreground="#8cc747"
-                           HorizontalAlignment="Center"
-                           Margin="0,0,0,20"/>-->
+                           Margin="0,0,0,12"/>
 
                 <TextBlock x:Name="TimeText"
-                           FontSize="40"
+                           FontSize="32"
                            Foreground="White"
                            HorizontalAlignment="Center"
-                           Margin="0,0,0,40"/>
+                           Margin="0,0,0,30"/>
 
-                <!-- Przycisk "Graj ponownie" w stylu kategorii -->
                 <StackPanel Orientation="Vertical"
                             Spacing="15"
                             HorizontalAlignment="Center">
                     
-                    <!-- Border z tekstem (jak kategoria) -->
                     <Border Classes="category"
-                            MinWidth="350"
-                            MinHeight="200">
+                            MinWidth="300"
+                            MinHeight="130"
+                            MaxWidth="320">
                         <Grid>
                             <TextBlock Text="Graj ponownie"
-                                       FontSize="32"
+                                       FontSize="26"
                                        FontWeight="Bold"
                                        Foreground="White"
                                        HorizontalAlignment="Center"
@@ -207,32 +214,30 @@
                         </Grid>
                     </Border>
                     
-                    <!-- Etykieta pod boxem (ko³o z liter¹ A) -->
-                    <Border Classes="letters"
-                            CornerRadius="150"
-                            Width="150"
-                            Height="150"
-                            HorizontalAlignment="Center"
-                            Padding="0,10,0,0">
+                    <Border CornerRadius="25"
+                            Width="50"
+                            Height="50"
+                            Background="#333739"
+                            HorizontalAlignment="Center">
                         <TextBlock Text="A"
-                                   FontSize="50"
+                                   FontSize="22"
                                    FontWeight="Bold"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center"/>
                     </Border>
                 </StackPanel>
             </StackPanel>
-
-            <!-- Progress Dots -->
-            <StackPanel x:Name="ProgressDotsPanel"
-                        Grid.Row="2"
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Center"
-                        Spacing="15"
-                        Margin="0,40,0,0"
-                        IsVisible="False">
-                <!-- Kropki bêd¹ dodawane dynamicznie -->
-            </StackPanel>
+            
+            <!-- Row 2: Answers - zakotwiczone na dole -->
+            <Grid Grid.Row="2"
+                  VerticalAlignment="Bottom"
+                  Margin="0,0,0,20">
+                <StackPanel x:Name="AnswersStack"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom"
+                            Spacing="12"/>
+            </Grid>
         </Grid>
     </Viewbox>
 </Window>

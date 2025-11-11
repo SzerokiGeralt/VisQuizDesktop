@@ -40,7 +40,7 @@ namespace VisQuizDesktop
                     OffsetX = 0,
                     OffsetY = 0,
                     Blur = 30,
-                    Spread = 5
+                    Spread = 2
                 }
             );
         }
@@ -51,7 +51,7 @@ namespace VisQuizDesktop
 
             border.Background = new SolidColorBrush(Color.Parse("#333739"));
             border.BorderBrush = new SolidColorBrush(Color.Parse(color));
-            border.BorderThickness = new Avalonia.Thickness(7);
+            border.BorderThickness = new Avalonia.Thickness(3);
             border.BoxShadow = CreateGlowShadow(color);
         }
 
@@ -116,7 +116,6 @@ namespace VisQuizDesktop
             CategoryPanel.IsVisible = true;
             QuestionPanel.IsVisible = false;
             ResultsPanel.IsVisible = false;
-            ProgressDotsPanel.IsVisible = false;
 
             DisplayCategories();
         }
@@ -140,8 +139,9 @@ namespace VisQuizDesktop
                 var border = new Border
                 {
                     Classes = { "category" },
-                    MinWidth = 350,
-                    MinHeight = 200,
+                    MinWidth = 300,
+                    MinHeight = 130,
+                    MaxWidth = 320,
                     Child = new Grid
                     {
                         Children =
@@ -149,14 +149,14 @@ namespace VisQuizDesktop
                             new TextBlock
                             {
                                 Text = category.Name,
-                                FontSize = 32,
+                                FontSize = 28,
                                 FontWeight = FontWeight.Bold,
                                 Foreground = Brushes.White,
                                 HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
                                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
                                 TextWrapping = TextWrapping.Wrap,
                                 TextAlignment = TextAlignment.Center,
-                                MaxWidth = 300,
+                                MaxWidth = 280,
                                 Padding = new Avalonia.Thickness(10)
                             }
                         }
@@ -166,19 +166,19 @@ namespace VisQuizDesktop
                 var label = new Border
                 {
                     Classes = { "letters" },
-                    CornerRadius = new Avalonia.CornerRadius(150),
-                    Width = 150,
-                    Height = 150,
+                    CornerRadius = new Avalonia.CornerRadius(25),
+                    Width = 50,
+                    Height = 50,
+                    Background = new SolidColorBrush(Color.Parse("#333739")),
                     HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
                     Child = new TextBlock
                     {
                         Text = $"{_inputLabel[i]}",
-                        FontSize = 50,
+                        FontSize = 22,
                         FontWeight = FontWeight.Bold,
                         HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
                         VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                    },
-                    Padding = new Avalonia.Thickness(0, 10, 0, 0)
+                    }
                 };
 
                 categoryContainer.Children.Add(border);
@@ -226,7 +226,13 @@ namespace VisQuizDesktop
             _currentView = ViewState.Question;
             CategoryPanel.IsVisible = false;
             QuestionPanel.IsVisible = true;
-            ProgressDotsPanel.IsVisible = false;
+            
+            // Poka¿ odpowiedzi gdy zaczynamy pytania
+            var answersStack = this.Find<StackPanel>("AnswersStack");
+            if (answersStack != null)
+            {
+                answersStack.IsVisible = true;
+            }
 
             DisplayQuestion(question);
 
@@ -240,19 +246,40 @@ namespace VisQuizDesktop
             int currentQuestionNumber = _quiz.CurrentState.CorrectlyAnsweredQuestions.Count +
                                        _quiz.CurrentState.WronglyAnsweredQuestions.Count + 1;
 
-            QuestionNumberText.Text = $"Pytanie {currentQuestionNumber} z {_quiz.MaxQuestions}";
+            //QuestionNumberText.Text = $"Pytanie {currentQuestionNumber} z {_quiz.MaxQuestions}";
             QuestionText.Text = question.Text;
 
             UpdateProgressDots(currentQuestionNumber);
 
+            // Obs³uga obrazka - ZAWSZE widoczny border (zajmuje miejsce)
+            var imageBorder = this.Find<Border>("QuestionImageBorder");
+            
             if (!string.IsNullOrEmpty(question.ImagePath) && File.Exists(question.ImagePath))
             {
                 QuestionImage.Source = new Bitmap(question.ImagePath);
-                QuestionImage.IsVisible = true;
+                QuestionImage.Opacity = 1;
+
+                if (imageBorder != null)
+                {
+                    imageBorder.Opacity = 1;
+                }
+                
+                // Gdy jest obrazek, tekst na górze
+                QuestionText.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Top;
             }
             else
             {
-                QuestionImage.IsVisible = false;
+                // Gdy brak obrazka, wyczyœæ source ale border pozostaje widoczny (puste miejsce)
+                QuestionImage.Source = null;
+                QuestionImage.Opacity = 0;
+                
+                if (imageBorder != null)
+                {
+                    imageBorder.Opacity = 0;
+                }
+                
+                // Gdy brak obrazka, tekst wyœrodkowany
+                QuestionText.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center;
             }
 
             AnswersStack.Children.Clear();
@@ -263,15 +290,18 @@ namespace VisQuizDesktop
                 var answerContainer = new StackPanel
                 {
                     Orientation = Avalonia.Layout.Orientation.Vertical,
-                    Spacing = 15,
-                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center
+                    Spacing = 8,
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                    MaxWidth = 320
                 };
 
+                // Wiêksze boxy dla odpowiedzi
                 var border = new Border
                 {
                     Classes = { "answer" },
-                    MinWidth = 350,
-                    MinHeight = 200,
+                    MinWidth = 300,
+                    Height = 130,
+                    MaxWidth = 320,
                     Child = new Grid
                     {
                         Children =
@@ -279,36 +309,38 @@ namespace VisQuizDesktop
                             new TextBlock
                             {
                                 Text = question.Answers[i],
-                                FontSize = 28,
+                                FontSize = 22,
                                 FontWeight = FontWeight.Bold,
                                 Foreground = Brushes.White,
                                 HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
                                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
                                 TextWrapping = TextWrapping.Wrap,
                                 TextAlignment = TextAlignment.Center,
-                                MaxWidth = 300,
-                                Padding = new Avalonia.Thickness(10)
+                                MaxWidth = 280,
+                                Padding = new Avalonia.Thickness(10),
+                                MaxHeight = 110
                             }
                         }
                     }
                 };
 
+                // Okr¹g³a odznaka z liter¹ (szare t³o)
                 var label = new Border
                 {
-                    Classes = { "letters" },
-                    CornerRadius = new Avalonia.CornerRadius(150),
-                    Width = 150,
-                    Height = 150,
+                    CornerRadius = new Avalonia.CornerRadius(25),
+                    Width = 50,
+                    Height = 50,
+                    Background = new SolidColorBrush(Color.Parse("#333739")),
                     HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
                     Child = new TextBlock
                     {
                         Text = $"{_inputLabel[i]}",
-                        FontSize = 50,
+                        FontSize = 22,
                         FontWeight = FontWeight.Bold,
+                        Foreground = Brushes.White,
                         HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
                         VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                    },
-                    Padding = new Avalonia.Thickness(0, 10, 0, 0)
+                    }
                 };
 
                 answerContainer.Children.Add(border);
@@ -396,8 +428,14 @@ namespace VisQuizDesktop
             _isProcessing = false;
 
             QuestionPanel.IsVisible = false;
-            ProgressDotsPanel.IsVisible = false;
             ResultsPanel.IsVisible = true;
+
+            // Ukryj odpowiedzi
+            var answersStack = this.Find<StackPanel>("AnswersStack");
+            if (answersStack != null)
+            {
+                answersStack.IsVisible = false;
+            }
 
             DisplayResults();
         }
