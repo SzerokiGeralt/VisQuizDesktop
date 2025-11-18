@@ -74,6 +74,13 @@ namespace VisQuizDesktop
 
         private void OnKeyDown(object? sender, KeyEventArgs e)
         {
+            // Toggle fullscreen na F11
+            if (e.Key == Key.F11)
+            {
+                ToggleFullscreen();
+                return;
+            }
+
             if (_isProcessing) return;
 
             int keyNumber = GetKeyNumber(e.Key);
@@ -93,6 +100,18 @@ namespace VisQuizDesktop
                         RestartGame();
                     }
                     break;
+            }
+        }
+
+        private void ToggleFullscreen()
+        {
+            if (WindowState == WindowState.FullScreen)
+            {
+                WindowState = WindowState.Normal;
+            }
+            else
+            {
+                WindowState = WindowState.FullScreen;
             }
         }
 
