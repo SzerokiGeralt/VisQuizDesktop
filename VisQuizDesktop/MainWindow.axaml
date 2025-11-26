@@ -112,20 +112,12 @@
                             Spacing="25"
                             Margin="0,0,0,15">
                     
-<!--                    <TextBlock x:Name="QuestionNumberText"
-                               FontSize="22"
+                    <TextBlock x:Name="QuestionNumberText"
+                               FontSize="26"
                                Foreground="#8cc747"
-                               VerticalAlignment="Center"/>-->
-                    
-                    <StackPanel Orientation="Horizontal"
-                                VerticalAlignment="Center"
-                                Spacing="10">
-                        <Ellipse x:Name="Dot1" Width="14" Height="14" Fill="#8cc747"/>
-                        <Ellipse x:Name="Dot2" Width="14" Height="14" Fill="#3A3F5F"/>
-                        <Ellipse x:Name="Dot3" Width="14" Height="14" Fill="#3A3F5F"/>
-                        <Ellipse x:Name="Dot4" Width="14" Height="14" Fill="#3A3F5F"/>
-                        <Ellipse x:Name="Dot5" Width="14" Height="14" Fill="#3A3F5F"/>
-                    </StackPanel>
+                               FontWeight="Bold"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"/>
                 </StackPanel>
 
                 <!-- Row 1: Question Text + Image - wyœrodkowane, bez marginesów bocznych -->

@@ -9,9 +9,15 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Assets\Fonts\Visgraph.ttf" />
+    <None Remove="Ustawienia.json" />
   </ItemGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\Fonts\Visgraph.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Ustawienia.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

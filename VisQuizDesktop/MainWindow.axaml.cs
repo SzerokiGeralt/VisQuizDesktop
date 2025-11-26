@@ -265,10 +265,8 @@ namespace VisQuizDesktop
             int currentQuestionNumber = _quiz.CurrentState.CorrectlyAnsweredQuestions.Count +
                                        _quiz.CurrentState.WronglyAnsweredQuestions.Count + 1;
 
-            //QuestionNumberText.Text = $"Pytanie {currentQuestionNumber} z {_quiz.MaxQuestions}";
+            QuestionNumberText.Text = $"Pytanie {currentQuestionNumber} z {_quiz.MaxQuestions}";
             QuestionText.Text = question.Text;
-
-            UpdateProgressDots(currentQuestionNumber);
 
             // Obs³uga obrazka - ZAWSZE widoczny border (zajmuje miejsce)
             var imageBorder = this.Find<Border>("QuestionImageBorder");
@@ -367,23 +365,6 @@ namespace VisQuizDesktop
 
                 _answerBorders.Add(border);
                 AnswersStack.Children.Add(answerContainer);
-            }
-        }
-
-        private void UpdateProgressDots(int currentQuestion)
-        {
-            var dots = new[] { Dot1, Dot2, Dot3, Dot4, Dot5 };
-
-            for (int i = 0; i < dots.Length; i++)
-            {
-                if (i < currentQuestion)
-                {
-                    dots[i].Fill = new SolidColorBrush(Color.Parse("#8cc747"));
-                }
-                else
-                {
-                    dots[i].Fill = new SolidColorBrush(Color.Parse("#3A3F5F"));
-                }
             }
         }
 

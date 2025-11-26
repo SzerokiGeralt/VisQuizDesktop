@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VisQuizDesktop.Models;
+using VisQuizDesktop.Services;
 
 namespace VisQuizDesktop.ViewModels
 {
@@ -13,7 +14,7 @@ namespace VisQuizDesktop.ViewModels
         public GameState? CurrentState { get; set; }
         public List<QuestionCategory> Categories { get; set; }
         public Stopwatch Timer { get; set; }
-        public int MaxQuestions { get; set; } = 5;
+        public int MaxQuestions { get; set; }
 
         public Quiz()
         {
@@ -21,6 +22,10 @@ namespace VisQuizDesktop.ViewModels
             Categories = questionLoader.LoadCategories();
             System.Diagnostics.Debug.WriteLine($"Załadowano: {Categories.Sum(n => n.Questions.Count)} pytań");
             Timer = new Stopwatch();
+            
+            // Wczytaj liczbę pytań z ustawień
+            var settings = SettingsService.LoadSettings();
+            MaxQuestions = settings.LiczbaPytan;
         }
 
         public Question? GetCurrentQuestion()
