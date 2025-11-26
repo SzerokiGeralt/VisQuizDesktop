@@ -86,14 +86,30 @@ namespace VisQuizDesktop.Services
                 PropertyNameCaseInsensitive = true,
             };
 
-
             var files = dirInfo.GetFiles("*.json");
             foreach (var file in files)
             {
                 string json = System.IO.File.ReadAllText(file.FullName);
                 var category = JsonSerializer.Deserialize<QuestionCategory>(json, options);
+                
                 if (category != null)
                 {
+                    // Popraw ścieżki obrazków - dodaj prefix QuestionsDirectory
+                    foreach (var question in category.Questions)
+                    {
+                        if (!string.IsNullOrEmpty(question.ImagePath))
+                        {
+                            // Jeśli ścieżka nie zawiera już folderu Pytania, dodaj go
+                            if (!question.ImagePath.StartsWith(QuestionsDirectory))
+                            {
+                                question.ImagePath = System.IO.Path.Combine(QuestionsDirectory, question.ImagePath);
+                            }
+                            
+                            // Debug: sprawdź czy plik istnieje
+                            System.Diagnostics.Debug.WriteLine($"Sprawdzam obrazek: {question.ImagePath} - Exists: {System.IO.File.Exists(question.ImagePath)}");
+                        }
+                    }
+                    
                     categories.Add(category);
                 }
             }
